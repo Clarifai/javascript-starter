@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Clarifai/javascript-starter/issues"
   },
-  "homepage": "https://github.com/Clarifai/javascript-starter#readme"
+  "homepage": "https://github.com/Clarifai/javascript-starter#readme",
+  "dependencies": {
+    "clarifai": "^2.0.16"
+  }
 }

@@ -7,19 +7,82 @@
   <script type="text/javascript" src="https://sdk.clarifai.com/js/clarifai-latest.js"></script>
   <script>
   var app = new Clarifai.App(
-    '{clientId}',
-    '{clientSecret}'
+    "{CLIENT_ID}",
+    "{CLIENT_SECRET}
   );
   </script>
+  
+  <style type="text/css">
+    body { margin-left:20px; font-family: sans-serif;}
+    ul {
+      list-style: none;
+      margin: 30px 0 0 0;
+      padding: 0;
+    }
+    li {
+      box-shadow: 0 0 0 2px #546578 inset;
+      margin: 0 0 5px 0;
+      border-radius: 16px;
+      line-height: 28px;
+      padding: 2px 15px;
+      font-weight: 500;
+      font-size: 15px;
+      color: #2E4157;
+    }
+    ul li i{
+      font-family: "Lucida Console", Courier, monospace;
+      font-style: normal;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-  <div>
-    <input type="text" id="imgurl" placeholder="Image URL"/>
-    <button onclick="predict_click($('#imgurl').val())">Predict!</button>
+  <div id="Title" style="font-size:48px; font-face:Arial; margin-bottom:20px;">Clarifai JavaScript Starter!</div>
+  <div id="Model_Title" style="font-size:16px; margin-bottom:5px">Model</div>
+  <form action="" style="font-size:14px; margin-bottom:20px; float:left; margin-right:30px;">
+    <input type="radio" name="model" value="general" checked="checked"> General<br>
+    <input type="radio" name="model" value="food"> Food<br>
+    <input type="radio" name="model" value="NSFW"> NSFW<br>
+    <input type="radio" name="model" value="travel"> Travel<br>
+    <input type="radio" name="model" value="wedding"> Wedding<br>
+    <input type="radio" name="model" value="color"> Color<br>
+  </form>
+  <div style="float:left">
+    <button onclick="
+    if(imgurl.value == '') { 
+      alert('Please enter an image URL!'); 
+      return;
+    } 
+    
+    else if (imgurl.value.indexOf('.gif') != -1) {
+      alert('Supported File Types: JPEG, PNG, TIFF, BMP');
+      return;
+    }
+    
+    predict_click($('#imgurl').val(), 'url');" style="width:112px">Predict a URL!
+    </button>
+    
+    <input type="text" id="imgurl" placeholder="Image URL" size="80"/>
+    
+    <br/><br/>
+    
+    <button onclick="
+    if(filename.value == '') { 
+      alert('Please browse for a file!'); 
+      return;
+    } 
+    
+    else if (filename.value.indexOf('.gif') != -1) {
+      alert('Supported File Types: JPEG, PNG, TIFF, BMP');
+      return;
+    }
+    predict_click($('#filename').val(), 'file');">Predict a local file!</button>
+    
+    <input type="file" id="filename" placeholder="Filename" size="80"/>
   </div>
-  <div>
-    <img id="img" src="" width="200"/>
+  <div style="margin-top:30px; margin-left:20px; clear:left; float:left">
+    <img id="img_preview" src="" width="200"/>
   </div>
-  <div id="concepts"></div>
+  <div id="concepts" style="float:left; margin-left:10px; margin-right:10px; max-height:400px; overflow:auto;"></div>
 </body>
 </html>

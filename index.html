@@ -4,11 +4,12 @@
   <title>Clarifai JavaScript Starter</title>
   <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="predict.js"></script>
+  <script type="text/javascript" src="keys.js"></script>
   <script type="text/javascript" src="https://sdk.clarifai.com/js/clarifai-latest.js"></script>
   <script>
   var app = new Clarifai.App(
-    "{CLIENT_ID}",
-    "{CLIENT_SECRET}"
+    CLIENT_ID,
+    CLIENT_SECRET
   );
   
   // Checks for valid image type

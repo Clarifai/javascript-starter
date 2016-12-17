@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Clarifai JavaScript Starter</title>
+  <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script type="text/javascript" src="predict.js"></script>
+  <script type="text/javascript" src="https://sdk.clarifai.com/js/clarifai-latest.js"></script>
+  <script>
+  var app = new Clarifai.App(
+    "{CLIENT_ID}",
+    "{CLIENT_SECRET}
+  );
+  
+  // Checks for valid image type
+  function validFile(image_name) {
+    var lower_image_name = image_name.toLowerCase();
+    return lower_image_name.indexOf(".jpg") != -1 || lower_image_name.indexOf(".jpeg") != -1 || lower_image_name.indexOf(".png") != -1 || lower_image_name.indexOf(".tiff") != -1 || lower_image_name.indexOf(".bmp") != -1 
+  }
+  
+  // Fills custom model dropdown
+  window.onload = function() {
+    var select = document.getElementById("custom_models_dropdown");
+    
+    var public_mods = ['general-v1.3', 'nsfw-v1.0', 'face-v1.3', 'color', 'food-items-v1.0', 'travel-v1.0', 'celeb-v1.3', 'weddings-v1.0'];
+    
+    app.models.list().then(
+      function(response) {
+        var ids = response.rawData;
+        
+        for(var i=0; i < ids.length; i++) {
+          var opt = ids[i];
+          if(public_mods.indexOf(opt.name) == -1) {
+            var el = document.createElement("option");
+            el.textContent = opt.name;
+            el.value = opt.id;
+            select.appendChild(el);
+          }
+        }
+      },
+      function(err) {
+        alert(err);
+      }
+    );
+  }
+  </script>
+  
+  <style type="text/css">
+    body { margin-left:20px; margin-top:20px; font-family: sans-serif; height:100%}
+    ul {
+      list-style: none;
+      margin: 30px 0 0 0;
+      padding: 0;
+      columns: 1;
+      -webkit-columns: 1;
+      -moz-columns: 1;
+    }
+    li {
+      box-shadow: 0 0 0 2px #546578 inset;
+      margin: 0 0 5px 0;
+      border-radius: 16px;
+      line-height: 28px;
+      padding: 2px 15px;
+      font-weight: 500;
+      font-size: 15px;
+      color: #2E4157;
+      overflow:auto;
+    }
+    ul li i{
+      font-family: "Lucida Console", Courier, monospace;
+      font-style: normal;
+      font-size: 14px;
+    }
+    
+    .conceptBox {
+      float:left; 
+      margin-left:40px; 
+      margin-top:15px;
+      margin-bottom:30px;
+    }
+  </style>
+</head>
+<body>
+  <div id="Title" style="font-size:48px; font-face:Arial; margin-bottom:20px;"><img src="logo.png" id="logo"/>&nbsp;JavaScript Starter!</div>
+  <div id="Model_Title" style="font-size:16px; margin-bottom:5px">Model</div>
+  <form action="" style="font-size:14px; margin-bottom:20px; float:left; margin-right:30px;">
+    <input type="radio" name="model" value="general" checked="checked"> General<br>
+    <input type="radio" name="model" value="food"> Food<br>
+    <input type="radio" name="model" value="NSFW"> NSFW<br>
+    <input type="radio" name="model" value="travel"> Travel<br>
+    <input type="radio" name="model" value="wedding"> Wedding<br>
+    <input type="radio" name="model" value="color"> Color<br>
+    <input type="radio" name="model" value="custom"> Custom &nbsp;<select id="custom_models_dropdown"></select>​<br>
+  </form>
+  <div style="float:left">
+    <button onclick="
+      if(imgurl.value == '') { 
+        alert('Please enter an image URL!'); 
+        return;
+      } 
+    
+      else if (!validFile(imgurl.value)) {
+        alert('Supported File Types: JPEG, PNG, TIFF, BMP');
+        return;
+      }
+    
+      predict_click($('#imgurl').val(), 'url');" style="width:112px">Predict a URL!</button>
+    
+    <input type="text" id="imgurl" placeholder="Image URL" size="80"/>
+    
+    <br/><br/>
+    
+    <button onclick="
+      if(filename.value == '') { 
+        alert('Please browse for a file!'); 
+        return;
+      } 
+    
+      else if (!validFile(filename.value)) {
+        alert('Supported File Types: JPEG, PNG, TIFF, BMP');
+        return;
+      }
+      predict_click($('#filename').val(), 'file');">Predict a local file!</button>
+    
+    <input type="file" id="filename" placeholder="Filename" size="80"/>
+  </div>
+  <div style="margin-top:30px; margin-left:20px; clear:left; float:left">
+    <img id="img_preview" src="" width="400"/>
+  </div>
+  <div id="concepts" class="conceptBox"></div>
+</body>
+</html>

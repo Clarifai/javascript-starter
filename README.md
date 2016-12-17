@@ -26,4 +26,4 @@ var CLIENT_ID = 'your ID here';
 var CLIENT_SECRET = 'your secret here';
 ```
 
-You'll also notice a custom_train.js file which serves as a reference for Custom Training. Any custom models that you create (under these credentials) will appear in the dropdown menu on index.html, in the Custom dropdown menu.
+You'll also notice a custom_train.js file which serves as a reference for Custom Training. Any custom models that you create (under these credentials) will appear in the dropdown menu on index.html, next to the "Custom" label

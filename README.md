@@ -27,3 +27,9 @@ var CLIENT_SECRET = 'your secret here';
 ```
 
 You'll also notice a custom_train.js file which serves as a reference for Custom Training. Any custom models that you create (under these credentials) will appear in the dropdown menu on index.html, next to the "Custom" label
+
+## Example Output
+
+<img src="https://s3.amazonaws.com/jared-clarifai-stuff/Screen+Shot+2017-01-05+at+4.04.37+PM.png"/>
+
+Note the "Add image to Application" button on the bottom left of the image. This will automatically add the image to the application that is associated with your credentials!

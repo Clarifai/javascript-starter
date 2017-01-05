@@ -3,6 +3,8 @@ function predict_click(value, source) {
   if(source == 'url') {
     document.getElementById('img_preview').src = value;
     doPredict({ url: value });
+    document.getElementById("hidden-type").value = "url";
+    document.getElementById("hidden-val").value = value;
   }
     
   else if(source == 'file') {
@@ -15,6 +17,8 @@ function predict_click(value, source) {
       preview.src = reader.result;
       var local_base64 = reader.result.split("base64,")[1];
       doPredict({ base64: local_base64 });
+      document.getElementById("hidden-type").value = "base64";
+      document.getElementById("hidden-val").value = local_base64;
     }, false);
 
     if (file) {
@@ -53,9 +57,11 @@ function doPredict(value) {
         
       concept_names += '</ul>';
       $('#concepts').html(concept_names);
+      
+      document.getElementById("add-image-button").style.visibility = "visible";
     },
     function(err) {
-      console.error(err);
+      console.log(err);
     }
   );
 }
@@ -81,8 +87,48 @@ function getSelectedModel() {
   else if(model == "color")
     return Clarifai.COLOR_MODEL;
     
+  else if(model == "apparel")
+    return "e0be3b9d6a454f0493ac3a30784001ff";
+    
+  else if(model == "faces")
+    return "c67b5872d8b44df4be55f2b3de3ebcbb";
+  
+  else if(model == "demographic")
+    return "c0c0ac362b03416da06ab3fa36fb58e3";
+    
   else if(model == "custom") {
     var e = document.getElementById("custom_models_dropdown");
     return e.options[e.selectedIndex].value;
+  }
+}
+
+function addImageToApp() {
+  var img_type = document.getElementById("hidden-type").value;
+  var img_value = document.getElementById("hidden-val").value;
+  
+  if(img_type == "url") {
+    app.inputs.create({
+      url: img_value
+    }).then(
+      function(response) {
+        alert("Image successfully added!");
+      },
+      function(err) {
+        alert(err);
+      }
+    );
+  }
+  
+  else if(img_type == "base64") {
+    app.inputs.create({
+      base64: img_value
+    }).then(
+      function(response) {
+        alert("Image successfully added!");
+      },
+      function(err) {
+        alert("Error Adding Image. Check to see if it is a duplicate.");
+      }
+    );
   }
 }

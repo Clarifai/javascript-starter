@@ -5,8 +5,8 @@ var FileReader = require('filereader');
 
 // instantiate a new Clarifai app passing in your clientId and clientSecret
 var app = new Clarifai.App(
-  '5di-GPg4gYNR9NlYitOlxbPZSHViYpZeKIs7bNtn',
-  '66-mlSYNAjLYkscE__wbA-HtcQklRTffAkoZRzdD'
+  CLIENT_ID,
+  CLIENT_SECRET
 );
 
 trainModel();

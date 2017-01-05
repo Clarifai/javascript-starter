@@ -22,7 +22,7 @@
   window.onload = function() {
     var select = document.getElementById("custom_models_dropdown");
     
-    var public_mods = ['general-v1.3', 'nsfw-v1.0', 'face-v1.3', 'color', 'food-items-v1.0', 'travel-v1.0', 'celeb-v1.3', 'weddings-v1.0'];
+    var public_mods = ['general-v1.3', 'nsfw-v1.0', 'face-v1.3', 'color', 'food-items-v1.0', 'travel-v1.0', 'celeb-v1.3', 'weddings-v1.0', 'apparel', 'age_gender_ethnicity'];
     
     app.models.list().then(
       function(response) {
@@ -46,7 +46,7 @@
   </script>
   
   <style type="text/css">
-    body { margin-left:20px; margin-top:20px; font-family: sans-serif; height:100%}
+    body { margin-left:20px; margin-top:20px; margin-bottom:30px; font-family: sans-serif; height:100%}
     ul {
       list-style: none;
       margin: 30px 0 0 0;
@@ -83,6 +83,8 @@
 <body>
   <div id="Title" style="font-size:48px; font-face:Arial; margin-bottom:20px;"><img src="logo.png" id="logo"/>&nbsp;JavaScript Starter!</div>
   <div id="Model_Title" style="font-size:16px; margin-bottom:5px">Model</div>
+  <input type="hidden" id="hidden-val" name="hidden-val"/>
+  <input type="hidden" id="hidden-type" name="hidden-type"/>
   <form action="" style="font-size:14px; margin-bottom:20px; float:left; margin-right:30px;">
     <input type="radio" name="model" value="general" checked="checked"> General<br>
     <input type="radio" name="model" value="food"> Food<br>
@@ -90,6 +92,9 @@
     <input type="radio" name="model" value="travel"> Travel<br>
     <input type="radio" name="model" value="wedding"> Wedding<br>
     <input type="radio" name="model" value="color"> Color<br>
+    <input type="radio" name="model" value="apparel"> Apparel<br>
+    <!--<input type="radio" name="model" value="faces"> Faces<br>-->
+    <!--<input type="radio" name="model" value="demographic"> Demographic<br>-->
     <input type="radio" name="model" value="custom"> Custom &nbsp;<select id="custom_models_dropdown"></select>​<br>
   </form>
   <div style="float:left">
@@ -124,8 +129,10 @@
     
     <input type="file" id="filename" placeholder="Filename" size="80"/>
   </div>
-  <div style="margin-top:30px; margin-left:20px; clear:left; float:left">
+  <div style="margin-top:30px; margin-left:20px; margin-bottom:30px; clear:left; float:left">
     <img id="img_preview" src="" width="400"/>
+    <br/>
+    <span id="add-image-button" style="visibility:hidden"><button onClick="addImageToApp()">Add image to application</button></span>
   </div>
   <div id="concepts" class="conceptBox"></div>
 </body>

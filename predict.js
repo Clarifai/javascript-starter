@@ -37,7 +37,7 @@ function doPredict(value) {
     
       // Check for color model since it has different JSON
       if(getSelectedModel() != Clarifai.COLOR_MODEL) {
-        tag_array = response.data.outputs[0].data.concepts;
+        tag_array = response.rawData.outputs[0].data.concepts;
  
         for (let i = 0; i < tag_array.length; i++) 
           concept_names += '<li>' + tag_array[i].name + ': <i>' + tag_array[i].value + '</i></li>';

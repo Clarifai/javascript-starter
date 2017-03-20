@@ -104,7 +104,7 @@ function doPredict(value) {
       		
       		// Celebrity
       		else {
-      			tag_array = people_array[i].data.faces[0].identity;
+      			tag_array = people_array[i].data.face.identity.concepts;
       			
       			// Print first 10 results
       			for(var c=0; c < 10; c++)

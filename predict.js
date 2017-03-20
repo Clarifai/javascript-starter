@@ -68,9 +68,9 @@ function doPredict(value) {
       		 		
       		// A/G/E has separate sub-arrays
       		if(model_name == "age_gender_ethnicity") {
-      			age_array = people_array[i].data.faces[0].age;
-      			ethnic_array = people_array[i].data.faces[0].ethnicity;
-      			gender = people_array[i].data.faces[0].gender[0];
+      			age_array = people_array[i].data.face.age.concepts;
+      			ethnic_array = people_array[i].data.face.multicultural_affinity.concepts;
+      			gender = people_array[i].data.face.gender_identity.concepts;
       		
       			// Age Header
       			concept_names += '<br/><b><span style="font-size:10px">Age</span></b>';
@@ -80,14 +80,14 @@ function doPredict(value) {
       				concept_names += '<li>' + age_array[a].name + ': <i>' + age_array[a].value + '</i></li>'; 
       		
       			// Ethnicity Header
-      			concept_names += '<b><span style="font-size:10px">Ethnicity</span></b>'
+      			concept_names += '<b><span style="font-size:10px">Multicultural Affinity</span></b>'
       			
       			// print top 3 ethnicities
       			for(let e = 0; e < 3; e++)
       				concept_names += '<li>' + ethnic_array[e].name + ': <i>' + ethnic_array[e].value + '</i></li>'; 
       		      		
       			// Gender Header
-      			concept_names += '<b><span style="font-size:10px">Gender</span></b>'
+      			concept_names += '<b><span style="font-size:10px">Gender Identity</span></b>'
       		
       			// print gender
       			concept_names += '<li>' + gender.name + ': <i>' + gender.value + '</i></li>'; 

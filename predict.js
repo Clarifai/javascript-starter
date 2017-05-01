@@ -46,48 +46,40 @@ function doPredict(value) {
     
     function(response) {
       let concept_names = "";
-      var tag_array, people_array;
+      var tag_array, region_array;
       var tag_count = 0;
       var model_name = response.rawData.outputs[0].model.name;
       
-      // Check for A/G/E, Faces and Celebrity First 
-      // They all look for people
-      if(model_name == "age_gender_ethnicity" || model_name == "face-v1.3" || model_name == "celeb-v1.3") {
-      	var people_array = response.rawData.outputs[0].data.regions;
-      	console.log(response);
-      	
-      	// First check if there any faces to evaluate
-      	if(people_array == null) {
-      		$('#concepts').html("<br/><br/><b>No Faces Detected!</b>");
-      		return;
-      	}
-      	
-      	// faces are found, so iterate through all of them
-      	for(let i = 0; i < people_array.length; i++) {
-      		concept_names += '<b>Person ' + (i+1) + '</b>';  
+      // Check for regions models first
+      if(response.rawData.outputs[0].data.hasOwnProperty("regions")) {
+      	var region_array = response.rawData.outputs[0].data.regions;
+
+      	// regions are found, so iterate through all of them
+      	for(let i = 0; i < region_array.length; i++) {
+      		concept_names += '<b>Result ' + (i+1) + '</b>';  
       		 		
       		// A/G/E has separate sub-arrays
-      		if(model_name == "age_gender_ethnicity") {
-      			age_array = people_array[i].data.face.age.concepts;
-      			ethnic_array = people_array[i].data.face.multicultural_affinity.concepts;
-      			gender = people_array[i].data.face.gender_identity.concepts;
+      		if(model_name == "demographics") {
+      			age_array = region_array[i].data.face.age_appearance.concepts;
+      			ethnic_array = region_array[i].data.face.multicultural_appearance.concepts;
+      			gender = region_array[i].data.face.gender_appearance.concepts;
       		
       			// Age Header
-      			concept_names += '<br/><b><span style="font-size:10px">Age</span></b>';
+      			concept_names += '<br/><b><span style="font-size:10px">Age Appearance</span></b>';
       		
       			// print top 5 ages
       			for(let a = 0; a < 5; a++)
       				concept_names += '<li>' + age_array[a].name + ': <i>' + age_array[a].value + '</i></li>'; 
       		
       			// Ethnicity Header
-      			concept_names += '<b><span style="font-size:10px">Multicultural Affinity</span></b>'
+      			concept_names += '<b><span style="font-size:10px">Multicultural Appearance</span></b>'
       			
       			// print top 3 ethnicities
       			for(let e = 0; e < 3; e++)
       				concept_names += '<li>' + ethnic_array[e].name + ': <i>' + ethnic_array[e].value + '</i></li>'; 
       		      		
       			// Gender Header
-      			concept_names += '<b><span style="font-size:10px">Gender Identity</span></b>'
+      			concept_names += '<b><span style="font-size:10px">Gender Appearance</span></b>'
       		
       			// print gender
       			concept_names += '<li>' + gender.name + ': <i>' + gender.value + '</i></li>'; 
@@ -96,27 +88,65 @@ function doPredict(value) {
       		// For faces just print bounding boxes
       		else if(model_name == "face-v1.3") {
       			// Top Row
-      			concept_names += '<li>Top Row: <i>' + people_array[i].region_info.bounding_box.top_row + '</i></li>';
-      			concept_names += '<li>Left Column: <i>' + people_array[i].region_info.bounding_box.left_col + '</i></li>';
-      			concept_names += '<li>Bottom Row: <i>' + people_array[i].region_info.bounding_box.bottom_row + '</i></li>';
-      			concept_names += '<li>Right Column: <i>' + people_array[i].region_info.bounding_box.right_col + '</i></li>';
+      			concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
+      			concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
+      			concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
+      			concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
       		}
       		
       		// Celebrity
-      		else {
-      			tag_array = people_array[i].data.face.identity.concepts;
+      		else if(model_name == "celeb-v1.3") {
+      			tag_array = region_array[i].data.face.identity.concepts;
       			
       			// Print first 10 results
       			for(var c=0; c < 10; c++)
       				concept_names += '<li>' + tag_array[c].name + ': <i>' + tag_array[c].value + '</i></li>'; 
+      		}
+          
+          // Logos
+      		else if(model_name == "logo") {
+      			// Print all results
+      			concept_names += '<br/><b><span style="font-size:10px">Logo</span></b>';
+      			concept_names += '<li>' + region_array[i].data.concepts[0].name + ': <i>' + region_array[i].data.concepts[0].value + '</i></li>';
+      			concept_names += '<br/><b><span style="font-size:10px">Location</span></b>';
+      			concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
+      			concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
+      			concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
+      			concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
+      		}
+          
+          // Focus
+      		else if(model_name == "focus") {
+      			// Print total focus score and all regions with focus
+      			
+      			if(i == 0) {
+      				concept_names += '<li>Overall Focus: <i>' + response.rawData.outputs[0].data.focus.value + '</i></li>'; 
+      			}
+      			
+      			concept_names += '<br/><b><span style="font-size:10px">Focus Region</span></b>';
+      			concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
+      			concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
+      			concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
+      			concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
       		}
       		
       		tag_count+=10;      	
      		}
      	}
       
-      // Check for color model since it has its own unique JSON
-      else if(model_name != "color") {
+      // Color Model has its own JSON response
+      else if(model_name == "color") {
+      	concept_names += '<b><span style="font-size:10px">Colors</span></b>';
+        tag_array = response.rawData.outputs[0].data.colors;
+        
+        for (let col = 0; col < tag_array.length; col++)
+          concept_names += '<li>' + tag_array[col].w3c.name + ': <i>' + tag_array[col].value + '</i></li>';
+
+        tag_count=tag_array.length;
+      }
+      
+      // Generic tag response models (general, food, etc.)
+      else if(response.rawData.outputs[0].data.hasOwnProperty("concepts")) {
         tag_array = response.rawData.outputs[0].data.concepts;
         
         for (let i = 0; i < tag_array.length; i++) 
@@ -125,14 +155,15 @@ function doPredict(value) {
         tag_count=tag_array.length;
       }
       
-      // Color Model
+      // Bad region request
       else {
-        tag_array = response.rawData.outputs[0].data.colors;
-        
-        for (let col = 0; col < tag_array.length; col++)
-          concept_names += '<li>' + tag_array[col].w3c.name + ': <i>' + tag_array[col].value + '</i></li>';
-
-        tag_count=tag_array.length;
+      	if(model_name != "logo" && model_name != "focus")
+      		$('#concepts').html("<br/><br/><b>No Faces Detected!</b>");
+      	else if(model_name == "logo")
+      		$('#concepts').html("<br/><br/><b>No Logos Detected!</b>");
+        else
+          $('#concepts').html("<br/><br/><b>No Focus Regions Detected!</b>");
+      	return;
       }
       
       var column_count = tag_count / 10;
@@ -180,11 +211,17 @@ function getSelectedModel() {
     return "e0be3b9d6a454f0493ac3a30784001ff";
     
   else if(model == "faces")
-    return "a403429f2ddf4b49b307e318f00e528b";
+    return Clarifai.FACE_DETECT_MODEL;
   
   else if(model == "demographic")
-    return "c0c0ac362b03416da06ab3fa36fb58e3";
-    
+    return Clarifai.DEMOGRAPHICS_MODEL;
+  
+  else if(model == "logo")
+    return Clarifai.LOGO_MODEL;
+
+	else if(model == "focus")
+  	return Clarifai.FOCUS_MODEL;
+  
   else if(model == "celebrity")
   	return "e466caa0619f444ab97497640cefc4dc";
   

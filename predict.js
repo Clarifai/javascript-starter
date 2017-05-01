@@ -56,83 +56,83 @@ function doPredict(value) {
 
       	// regions are found, so iterate through all of them
       	for(let i = 0; i < region_array.length; i++) {
-      		concept_names += '<b>Result ' + (i+1) + '</b>';  
+      	  concept_names += '<b>Result ' + (i+1) + '</b>';  
       		 		
-      		// A/G/E has separate sub-arrays
-      		if(model_name == "demographics") {
-      			age_array = region_array[i].data.face.age_appearance.concepts;
-      			ethnic_array = region_array[i].data.face.multicultural_appearance.concepts;
-      			gender = region_array[i].data.face.gender_appearance.concepts;
+      	  // Demographics has separate sub-arrays
+      	  if(model_name == "demographics") {
+      	    age_array = region_array[i].data.face.age_appearance.concepts;
+      	    ethnic_array = region_array[i].data.face.multicultural_appearance.concepts;
+      	    gender = region_array[i].data.face.gender_appearance.concepts;
       		
-      			// Age Header
-      			concept_names += '<br/><b><span style="font-size:10px">Age Appearance</span></b>';
+      	  // Age Header
+      	  concept_names += '<br/><b><span style="font-size:10px">Age Appearance</span></b>';
       		
-      			// print top 5 ages
-      			for(let a = 0; a < 5; a++)
-      				concept_names += '<li>' + age_array[a].name + ': <i>' + age_array[a].value + '</i></li>'; 
+      	  // print top 5 ages
+      	  for(let a = 0; a < 5; a++)
+      	     concept_names += '<li>' + age_array[a].name + ': <i>' + age_array[a].value + '</i></li>'; 
       		
-      			// Ethnicity Header
-      			concept_names += '<b><span style="font-size:10px">Multicultural Appearance</span></b>'
+      	  // Ethnicity Header
+      	  concept_names += '<b><span style="font-size:10px">Multicultural Appearance</span></b>'
       			
-      			// print top 3 ethnicities
-      			for(let e = 0; e < 3; e++)
-      				concept_names += '<li>' + ethnic_array[e].name + ': <i>' + ethnic_array[e].value + '</i></li>'; 
+      	  // print top 3 ethnicities
+      	  for(let e = 0; e < 3; e++)
+      	    concept_names += '<li>' + ethnic_array[e].name + ': <i>' + ethnic_array[e].value + '</i></li>'; 
       		      		
-      			// Gender Header
-      			concept_names += '<b><span style="font-size:10px">Gender Appearance</span></b>'
+      	  // Gender Header
+      	  concept_names += '<b><span style="font-size:10px">Gender Appearance</span></b>'
       		
-      			// print gender
-      			concept_names += '<li>' + gender.name + ': <i>' + gender.value + '</i></li>'; 
-      		}
+      	  // print gender
+      	    concept_names += '<li>' + gender.name + ': <i>' + gender.value + '</i></li>'; 
+          }
       		
-      		// For faces just print bounding boxes
-      		else if(model_name == "face-v1.3") {
-      			// Top Row
-      			concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
-      			concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
-      			concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
-      			concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
-      		}
+          // For faces just print bounding boxes
+      	  else if(model_name == "face-v1.3") {
+      	    // Top Row
+      	    concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
+      	    concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
+      	    concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
+      	    concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
+      	  }
       		
-      		// Celebrity
-      		else if(model_name == "celeb-v1.3") {
-      			tag_array = region_array[i].data.face.identity.concepts;
+      	  // Celebrity
+      	  else if(model_name == "celeb-v1.3") {
+      	    tag_array = region_array[i].data.face.identity.concepts;
       			
-      			// Print first 10 results
-      			for(var c=0; c < 10; c++)
-      				concept_names += '<li>' + tag_array[c].name + ': <i>' + tag_array[c].value + '</i></li>'; 
-      		}
+      	    // Print first 10 results
+      	    for(var c=0; c < 10; c++)
+      	      concept_names += '<li>' + tag_array[c].name + ': <i>' + tag_array[c].value + '</i></li>'; 
+	  }
           
           // Logos
-      		else if(model_name == "logo") {
-      			// Print all results
-      			concept_names += '<br/><b><span style="font-size:10px">Logo</span></b>';
-      			concept_names += '<li>' + region_array[i].data.concepts[0].name + ': <i>' + region_array[i].data.concepts[0].value + '</i></li>';
-      			concept_names += '<br/><b><span style="font-size:10px">Location</span></b>';
-      			concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
-      			concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
-      			concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
-      			concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
-      		}
+      	  else if(model_name == "logo") {
+      	    // Print all results
+      	    concept_names += '<br/><b><span style="font-size:10px">Logo</span></b>';
+      	    concept_names += '<li>' + region_array[i].data.concepts[0].name + ': <i>' + region_array[i].data.concepts[0].value + '</i></li>';
+            concept_names += '<br/><b><span style="font-size:10px">Location</span></b>';
+      	    concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
+            concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
+      	    concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
+      	    concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
+      	  }
           
           // Focus
-      		else if(model_name == "focus") {
-      			// Print total focus score and all regions with focus
+      	  else if(model_name == "focus") {
+      	    // Print total focus score and all regions with focus
       			
-      			if(i == 0) {
-      				concept_names += '<li>Overall Focus: <i>' + response.rawData.outputs[0].data.focus.value + '</i></li>'; 
-      			}
+      	    if(i == 0) {
+      	      concept_names += '<li>Overall Focus: <i>' + response.rawData.outputs[0].data.focus.value + '</i></li>'; 
+      	    }
       			
-      			concept_names += '<br/><b><span style="font-size:10px">Focus Region</span></b>';
-      			concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
-      			concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
-      			concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
-      			concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
-      		}
+      	    concept_names += '<br/><b><span style="font-size:10px">Focus Region</span></b>';
+            concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
+      	    concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
+      	    concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
+      	    concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
+      	  }
       		
-      		tag_count+=10;      	
-     		}
+      	  tag_count+=10;      	
      	}
+      }
       
       // Color Model has its own JSON response
       else if(model_name == "color") {
@@ -158,9 +158,9 @@ function doPredict(value) {
       // Bad region request
       else {
       	if(model_name != "logo" && model_name != "focus")
-      		$('#concepts').html("<br/><br/><b>No Faces Detected!</b>");
+      	  $('#concepts').html("<br/><br/><b>No Faces Detected!</b>");
       	else if(model_name == "logo")
-      		$('#concepts').html("<br/><br/><b>No Logos Detected!</b>");
+      	  $('#concepts').html("<br/><br/><b>No Logos Detected!</b>");
         else
           $('#concepts').html("<br/><br/><b>No Focus Regions Detected!</b>");
       	return;
@@ -219,11 +219,11 @@ function getSelectedModel() {
   else if(model == "logo")
     return Clarifai.LOGO_MODEL;
 
-	else if(model == "focus")
-  	return Clarifai.FOCUS_MODEL;
+  else if(model == "focus")
+    return Clarifai.FOCUS_MODEL;
   
   else if(model == "celebrity")
-  	return "e466caa0619f444ab97497640cefc4dc";
+    return "e466caa0619f444ab97497640cefc4dc";
   
   else if(model == "custom") {
     var e = document.getElementById("custom_models_dropdown");

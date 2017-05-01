@@ -64,24 +64,24 @@ function doPredict(value) {
       	    ethnic_array = region_array[i].data.face.multicultural_appearance.concepts;
       	    gender = region_array[i].data.face.gender_appearance.concepts;
       		
-      	  // Age Header
-      	  concept_names += '<br/><b><span style="font-size:10px">Age Appearance</span></b>';
+      	    // Age Header
+      	    concept_names += '<br/><b><span style="font-size:10px">Age Appearance</span></b>';
       		
-      	  // print top 5 ages
-      	  for(let a = 0; a < 5; a++)
-      	     concept_names += '<li>' + age_array[a].name + ': <i>' + age_array[a].value + '</i></li>'; 
+      	    // print top 5 ages
+      	    for(let a = 0; a < 5; a++)
+      	      concept_names += '<li>' + age_array[a].name + ': <i>' + age_array[a].value + '</i></li>'; 
       		
-      	  // Ethnicity Header
-      	  concept_names += '<b><span style="font-size:10px">Multicultural Appearance</span></b>'
+      	    // Ethnicity Header
+      	    concept_names += '<b><span style="font-size:10px">Multicultural Appearance</span></b>'
       			
-      	  // print top 3 ethnicities
-      	  for(let e = 0; e < 3; e++)
-      	    concept_names += '<li>' + ethnic_array[e].name + ': <i>' + ethnic_array[e].value + '</i></li>'; 
+      	    // print top 3 ethnicities
+      	    for(let e = 0; e < 3; e++)
+      	      concept_names += '<li>' + ethnic_array[e].name + ': <i>' + ethnic_array[e].value + '</i></li>'; 
       		      		
-      	  // Gender Header
-      	  concept_names += '<b><span style="font-size:10px">Gender Appearance</span></b>'
+      	    // Gender Header
+      	    concept_names += '<b><span style="font-size:10px">Gender Appearance</span></b>'
       		
-      	  // print gender
+      	    // print gender
       	    concept_names += '<li>' + gender.name + ': <i>' + gender.value + '</i></li>'; 
           }
       		

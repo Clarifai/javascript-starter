@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Clarifai JavaScript Starter</title>
-  <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <title>Clarifai Model Tester</title>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="predict.js"></script>
   <script type="text/javascript" src="keys.js"></script>
   <script type="text/javascript" src="https://sdk.clarifai.com/js/clarifai-latest.js"></script>
@@ -13,16 +13,16 @@
   );
   
   // Checks for valid image type
-  function validFile(image_name) {
-    var lower_image_name = image_name.toLowerCase();
-    return lower_image_name.indexOf(".jpg") != -1 || lower_image_name.indexOf(".jpeg") != -1 || lower_image_name.indexOf(".png") != -1 || lower_image_name.indexOf(".tiff") != -1 || lower_image_name.indexOf(".bmp") != -1 
+  function validFile(imageName) {
+    var lowerImageName = imageName.toLowerCase();
+    return lowerImageName.indexOf(".jpg") != -1 || lower_image_name.indexOf(".jpeg") != -1 || lower_image_name.indexOf(".png") != -1 || lower_image_name.indexOf(".tiff") != -1 || lower_image_name.indexOf(".bmp") != -1 
   }
   
   // Fills custom model dropdown
   window.onload = function() {
     var select = document.getElementById("custom_models_dropdown");
     
-    var public_mods = ['general-v1.3', 'nsfw-v1.0', 'face-v1.3', 'color', 'food-items-v1.0', 'travel-v1.0', 'celeb-v1.3', 'weddings-v1.0', 'apparel', 'age_gender_ethnicity'];
+    var publicMods = ['general-v1.3', 'nsfw-v1.0', 'face-v1.3', 'color', 'food-items-v1.0', 'travel-v1.0', 'celeb-v1.3', 'weddings-v1.0', 'apparel', 'demographic', 'logo', 'focus'];
     
     app.models.list().then(
       function(response) {
@@ -30,7 +30,7 @@
         
         for(var i=0; i < ids.length; i++) {
           var opt = ids[i];
-          if(public_mods.indexOf(opt.name) == -1) {
+          if(publicMods.indexOf(opt.name) == -1) {
             var el = document.createElement("option");
             el.textContent = opt.name;
             el.value = opt.id;
@@ -54,6 +54,7 @@
       columns: 1;
       -webkit-columns: 1;
       -moz-columns: 1;
+      overflow:auto;
     }
     li {
       box-shadow: 0 0 0 2px #546578 inset;
@@ -64,7 +65,6 @@
       font-weight: 500;
       font-size: 15px;
       color: #2E4157;
-      overflow:auto;
     }
     ul li i{
       font-family: "Lucida Console", Courier, monospace;
@@ -77,14 +77,14 @@
       margin-left:40px; 
       margin-top:15px;
       margin-bottom:30px;
+      height:100%;
     }
   </style>
 </head>
 <body>
-  <div id="Title" style="font-size:48px; font-face:Arial; margin-bottom:20px;"><img src="Clarifai_Logo.png" id="logo"/>&nbsp;JavaScript Starter!</div>
+  <div id="Title" style="font-size:48px; font-face:Arial; margin-bottom:20px;"><img src="logo.png" id="logo"/>&nbsp;Model Tester!</div>
   <div id="Model_Title" style="font-size:16px; margin-bottom:5px">Model</div>
-  <input type="hidden" id="hidden-val" name="hidden-val"/>
-  <input type="hidden" id="hidden-type" name="hidden-type"/>
+  <input type="hidden" id="hidden-counter" name="hidden-counter" value="1"/>
   <form action="" style="font-size:14px; margin-bottom:20px; float:left; margin-right:30px;">
     <input type="radio" name="model" value="general" checked="checked"> General<br>
     <input type="radio" name="model" value="food"> Food<br>
@@ -96,7 +96,9 @@
     <input type="radio" name="model" value="faces"> Faces<br>
     <input type="radio" name="model" value="demographic"> Demographic<br>
     <input type="radio" name="model" value="celebrity"> Celebrity<br>
-    <input type="radio" name="model" value="custom"> Custom &nbsp;<select id="custom_models_dropdown"></select>​<br>
+    <input type="radio" name="model" value="logo"> Logo<br>
+    <input type="radio" name="model" value="focus"> Focus<br>
+    <input type="radio" name="model" value="custom"> Custom &nbsp;<select id="custom_models_dropdown"></select><br>
   </form>
   <div style="float:left">
     <button onclick="
@@ -130,11 +132,16 @@
     
     <input type="file" id="filename" placeholder="Filename" size="80"/>
   </div>
-  <div style="margin-top:30px; margin-left:20px; margin-bottom:30px; clear:left; float:left">
-    <img id="img_preview" src="" width="400"/>
-    <br/>
-    <span id="add-image-button" style="visibility:hidden"><button onClick="addImageToApp()">Add image to application</button></span>
+  
+  <div id="predictions">
+    <div style="margin-top:30px; margin-left:20px; margin-bottom:30px; clear:left; float:left">
+      <img id="img_preview1" src="" width="400"/>
+      <br/>
+      <span id="add-image-button" style="visibility:hidden"><button onClick="addImageToApp(1)">Add image to application</button></span>
+    </div>
+    <div id="concepts" class="conceptBox">
+    </div>
   </div>
-  <div id="concepts" class="conceptBox"></div>
+  
 </body>
 </html>

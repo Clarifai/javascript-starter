@@ -1,30 +1,39 @@
 /*
   Purpose: Pass information to other helper functions after a user clicks 'Predict'
   Args:
-  	value - Actual filename or URL
-  	source - 'url' or 'file'
+    value - Actual filename or URL
+    source - 'url' or 'file'
 */
 function predict_click(value, source) {
-  
-  if(source == 'url') {
-    document.getElementById('img_preview').src = value;
+  // first grab current index
+  var index = document.getElementById("hidden-counter").value;
+
+  // Div Stuff
+  if(index > 1)
+    createNewDisplayDiv(index);
+      
+  if(source == "url") {
+    document.getElementById("img_preview" + index).src = value;
     doPredict({ url: value });
-    document.getElementById("hidden-type").value = "url";
-    document.getElementById("hidden-val").value = value;
+    
+    // Div Stuff
+    createHiddenDivs("url", value);
   }
     
-  else if(source == 'file') {
-    var preview = document.querySelector('#img_preview');
-    var file    = document.querySelector('input[type=file]').files[0];
+  else if(source == "file") {
+    var preview = document.querySelector("#img_preview" + index);
+    var file    = document.querySelector("input[type=file]").files[0];
     var reader  = new FileReader();
 
     // load local file picture
     reader.addEventListener("load", function () {
       preview.src = reader.result;
-      var local_base64 = reader.result.split("base64,")[1];
-      doPredict({ base64: local_base64 });
-      document.getElementById("hidden-type").value = "base64";
-      document.getElementById("hidden-val").value = local_base64;
+      var localBase64 = reader.result.split("base64,")[1];
+      doPredict({ base64: localBase64 });
+      
+      // Div Stuff
+      createHiddenDivs("base64", localBase64);
+        
     }, false);
 
     if (file) {
@@ -36,142 +45,143 @@ function predict_click(value, source) {
 /*
   Purpose: Does a v2 prediction based on user input
   Args:
-  	value - Either {url : url_value} or { base64 : base64_value }
+    value - Either {url : urlValue} or { base64 : base64Value }
 */
 function doPredict(value) {
 
-  var model_id = getSelectedModel();
+  var modelID = getSelectedModel();
 
-  app.models.predict(model_id, value).then(
+  app.models.predict(modelID, value).then(
     
     function(response) {
-      let concept_names = "";
-      var tag_array, region_array;
-      var tag_count = 0;
-      var model_name = response.rawData.outputs[0].model.name;
+      console.log(response);
+      var conceptNames = "";
+      var tagArray, regionArray;
+      var tagCount = 0;
+      var modelName = response.rawData.outputs[0].model.name;
       
       // Check for regions models first
       if(response.rawData.outputs[0].data.hasOwnProperty("regions")) {
-      	var region_array = response.rawData.outputs[0].data.regions;
-
-      	// regions are found, so iterate through all of them
-      	for(let i = 0; i < region_array.length; i++) {
-      	  concept_names += '<b>Result ' + (i+1) + '</b>';  
+        regionArray = response.rawData.outputs[0].data.regions;
+      	
+        // Regions are found, so iterate through all of them
+        for(var i = 0; i < regionArray.length; i++) {
+      	  conceptNames += "<b>Result " + (i+1) + "</b>";  
       		 		
-      	  // Demographics has separate sub-arrays
-      	  if(model_name == "demographics") {
-      	    age_array = region_array[i].data.face.age_appearance.concepts;
-      	    ethnic_array = region_array[i].data.face.multicultural_appearance.concepts;
-      	    gender = region_array[i].data.face.gender_appearance.concepts;
-      		
-      	    // Age Header
-      	    concept_names += '<br/><b><span style="font-size:10px">Age Appearance</span></b>';
+      	  // Demographic has separate sub-arrays
+      	  if(modelName == "demographics") {
+      	    var ageArray = regionArray[i].data.face.age_appearance.concepts;
+      	    var ethnicArray = regionArray[i].data.face.multicultural_appearance.concepts;
+      	    var genderArray = regionArray[i].data.face.gender_appearance.concepts;
+          
+            // Age Header
+      	    conceptNames += '<br/><b><span style="font-size:10px">Age Appearance</span></b>';
       		
       	    // print top 5 ages
-      	    for(let a = 0; a < 5; a++)
-      	      concept_names += '<li>' + age_array[a].name + ': <i>' + age_array[a].value + '</i></li>'; 
+      	    for(var a = 0; a < 5; a++)
+      	      conceptNames += '<li>' + ageArray[a].name + ': <i>' + ageArray[a].value + '</i></li>'; 
       		
       	    // Ethnicity Header
-      	    concept_names += '<b><span style="font-size:10px">Multicultural Appearance</span></b>'
+      	    conceptNames += '<b><span style="font-size:10px">Multicultural Appearance</span></b>';
       			
       	    // print top 3 ethnicities
-      	    for(let e = 0; e < 3; e++)
-      	      concept_names += '<li>' + ethnic_array[e].name + ': <i>' + ethnic_array[e].value + '</i></li>'; 
+      	    for(var e = 0; e < 3; e++)
+      	      conceptNames += '<li>' + ethnicArray[e].name + ': <i>' + ethnicArray[e].value + '</i></li>'; 
       		      		
       	    // Gender Header
-      	    concept_names += '<b><span style="font-size:10px">Gender Appearance</span></b>'
+      	    conceptNames += '<b><span style="font-size:10px">Gender Appearance</span></b>';
       		
       	    // print gender
-      	    concept_names += '<li>' + gender.name + ': <i>' + gender.value + '</i></li>'; 
-          }
+      	    conceptNames += '<li>' + genderArray[0].name + ': <i>' + genderArray[0].value + '</i></li>'; 
+      	}
       		
-          // For faces just print bounding boxes
-      	  else if(model_name == "face-v1.3") {
-      	    // Top Row
-      	    concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
-      	    concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
-      	    concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
-      	    concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
-      	  }
+        // For faces just print bounding boxes
+      	else if(modelName == "face-v1.3") {
+      	  // Top Row
+      	  conceptNames += '<li>Top Row: <i>' + regionArray[i].region_info.bounding_box.top_row + '</i></li>';
+      	  conceptNames += '<li>Left Column: <i>' + regionArray[i].region_info.bounding_box.left_col + '</i></li>';
+      	  conceptNames += '<li>Bottom Row: <i>' + regionArray[i].region_info.bounding_box.bottom_row + '</i></li>';
+      	  conceptNames += '<li>Right Column: <i>' + regionArray[i].region_info.bounding_box.right_col + '</i></li>';
+      	}
       		
-      	  // Celebrity
-      	  else if(model_name == "celeb-v1.3") {
-      	    tag_array = region_array[i].data.face.identity.concepts;
+      	// Celebrity
+      	else if(modelName == "celeb-v1.3") {
+      	  tagArray = regionArray[i].data.face.identity.concepts;
       			
-      	    // Print first 10 results
-      	    for(var c=0; c < 10; c++)
-      	      concept_names += '<li>' + tag_array[c].name + ': <i>' + tag_array[c].value + '</i></li>'; 
-	  }
-          
-          // Logos
-      	  else if(model_name == "logo") {
-      	    // Print all results
-      	    concept_names += '<br/><b><span style="font-size:10px">Logo</span></b>';
-      	    concept_names += '<li>' + region_array[i].data.concepts[0].name + ': <i>' + region_array[i].data.concepts[0].value + '</i></li>';
-            concept_names += '<br/><b><span style="font-size:10px">Location</span></b>';
-      	    concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
-            concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
-      	    concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
-      	    concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
-      	  }
-          
-          // Focus
-      	  else if(model_name == "focus") {
-      	    // Print total focus score and all regions with focus
-      			
-      	    if(i == 0) {
-      	      concept_names += '<li>Overall Focus: <i>' + response.rawData.outputs[0].data.focus.value + '</i></li>'; 
-      	    }
-      			
-      	    concept_names += '<br/><b><span style="font-size:10px">Focus Region</span></b>';
-            concept_names += '<li>Top Row: <i>' + region_array[i].region_info.bounding_box.top_row + '</i></li>';
-      	    concept_names += '<li>Left Column: <i>' + region_array[i].region_info.bounding_box.left_col + '</i></li>';
-      	    concept_names += '<li>Bottom Row: <i>' + region_array[i].region_info.bounding_box.bottom_row + '</i></li>';
-      	    concept_names += '<li>Right Column: <i>' + region_array[i].region_info.bounding_box.right_col + '</i></li>';
-      	  }
+      	  // Print first 10 results
+      	  for(var c=0; c < 10; c++)
+      	    conceptNames += '<li>' + tagArray[c].name + ': <i>' + tagArray[c].value + '</i></li>'; 
+      	}
       		
-      	  tag_count+=10;      	
-     	}
+      	// Logos
+      	else if(modelName == "logo") {
+      	  // Print all results
+      	  conceptNames += '<br/><b><span style="font-size:10px">Logo</span></b>';
+      	  conceptNames += '<li>' + regionArray[i].data.concepts[0].name + ': <i>' + regionArray[i].data.concepts[0].value + '</i></li>';
+      	  conceptNames += '<br/><b><span style="font-size:10px">Location</span></b>';
+      	  conceptNames += '<li>Top Row: <i>' + regionArray[i].region_info.bounding_box.top_row + '</i></li>';
+      	  conceptNames += '<li>Left Column: <i>' + regionArray[i].region_info.bounding_box.left_col + '</i></li>';
+      	  conceptNames += '<li>Bottom Row: <i>' + regionArray[i].region_info.bounding_box.bottom_row + '</i></li>';
+      	  conceptNames += '<li>Right Column: <i>' + regionArray[i].region_info.bounding_box.right_col + '</i></li>';
+      	}
+      		
+      	// Focus
+      	else if(modelName == "focus") {
+      	  // Print total focus score and all regions with focus
+      			
+      	  if(i === 0) {
+      	    conceptNames += '<li>Overall Focus: <i>' + response.rawData.outputs[0].data.focus.value + '</i></li>'; 
+      	  }
+      			
+      	  conceptNames += '<br/><b><span style="font-size:10px">Focus Region</span></b>';
+      	  conceptNames += '<li>Top Row: <i>' + regionArray[i].region_info.bounding_box.top_row + '</i></li>';
+      	  conceptNames += '<li>Left Column: <i>' + regionArray[i].region_info.bounding_box.left_col + '</i></li>';
+      	  conceptNames += '<li>Bottom Row: <i>' + regionArray[i].region_info.bounding_box.bottom_row + '</i></li>';
+      	  conceptNames += '<li>Right Column: <i>' + regionArray[i].region_info.bounding_box.right_col + '</i></li>';
+      	}
+      		
+      	tagCount+=10;      	
       }
+     }
       
-      // Color Model has its own JSON response
-      else if(model_name == "color") {
-      	concept_names += '<b><span style="font-size:10px">Colors</span></b>';
-        tag_array = response.rawData.outputs[0].data.colors;
+      // Color Model
+      else if(modelName == "color") {
+      	conceptNames += '<b><span style="font-size:10px">Colors</span></b>';
+        tagArray = response.rawData.outputs[0].data.colors;
         
-        for (let col = 0; col < tag_array.length; col++)
-          concept_names += '<li>' + tag_array[col].w3c.name + ': <i>' + tag_array[col].value + '</i></li>';
+        for (var col = 0; col < tagArray.length; col++)
+          conceptNames += '<li>' + tagArray[col].w3c.name + ': <i>' + tagArray[col].value + '</i></li>';
 
-        tag_count=tag_array.length;
+        tagCount=tagArray.length;
       }
       
-      // Generic tag response models (general, food, etc.)
+      // Generic tag response models
       else if(response.rawData.outputs[0].data.hasOwnProperty("concepts")) {
-        tag_array = response.rawData.outputs[0].data.concepts;
+        tagArray = response.rawData.outputs[0].data.concepts;
         
-        for (let i = 0; i < tag_array.length; i++) 
-          concept_names += '<li>' + tag_array[i].name + ': <i>' + tag_array[i].value + '</i></li>';
+        for (var other = 0; other < tagArray.length; other++) 
+          conceptNames += '<li>' + tagArray[other].name + ': <i>' + tagArray[other].value + '</i></li>';
           
-        tag_count=tag_array.length;
+        tagCount=tagArray.length;
       }
       
       // Bad region request
       else {
-      	if(model_name != "logo" && model_name != "focus")
-      	  $('#concepts').html("<br/><br/><b>No Faces Detected!</b>");
-      	else if(model_name == "logo")
-      	  $('#concepts').html("<br/><br/><b>No Logos Detected!</b>");
+      	if(modelName != "logo" && modelName != "focus")
+          $('#concepts').html("<br/><br/><b>No Faces Detected!</b>");
+      	else if(modelName == "logo")
+          $('#concepts').html("<br/><br/><b>No Logos Detected!</b>");
         else
           $('#concepts').html("<br/><br/><b>No Focus Regions Detected!</b>");
       	return;
       }
       
-      var column_count = tag_count / 10;
+      var columnCount = tagCount / 10;
       
-      concept_names = '<ul style="margin-right:20px; margin-top:20px; columns:' + column_count + '; -webkit-columns:' + column_count + '; -moz-columns:' + column_count + ';">' + concept_names;
+      conceptNames = '<ul style="margin-right:20px; margin-top:20px; columns:' + columnCount + '; -webkit-columns:' + columnCount + '; -moz-columns:' + columnCount + ';">' + conceptNames;
         
-      concept_names += '</ul>';
-      $('#concepts').html(concept_names);
+      conceptNames += '</ul>';
+      $('#concepts').html(conceptNames);
       
       document.getElementById("add-image-button").style.visibility = "visible";
     },
@@ -207,28 +217,29 @@ function getSelectedModel() {
   else if(model == "color")
     return Clarifai.COLOR_MODEL;
     
+  else if(model == "demographic")
+    return Clarifai.DEMOGRAPHICS_MODEL;
+    
+  else if(model == "logo")
+  	return Clarifai.LOGO_MODEL;
+    
   else if(model == "apparel")
     return "e0be3b9d6a454f0493ac3a30784001ff";
     
   else if(model == "faces")
     return Clarifai.FACE_DETECT_MODEL;
-  
-  else if(model == "demographic")
-    return Clarifai.DEMOGRAPHICS_MODEL;
-  
-  else if(model == "logo")
-    return Clarifai.LOGO_MODEL;
 
   else if(model == "focus")
     return Clarifai.FOCUS_MODEL;
-  
+    
   else if(model == "celebrity")
     return "e466caa0619f444ab97497640cefc4dc";
-  
+    
   else if(model == "custom") {
     var e = document.getElementById("custom_models_dropdown");
     return e.options[e.selectedIndex].value;
   }
+
 }
 
 /*
@@ -236,26 +247,13 @@ function getSelectedModel() {
   Args:
     index - # of the image in the session
 */
-function addImageToApp() {
-  var img_type = document.getElementById("hidden-type").value;
-  var img_value = document.getElementById("hidden-val").value;
+function addImageToApp(index) {
+  var imgType = document.getElementById("hidden-type" + index).value;
+  var imgValue = document.getElementById("hidden-val" + index).value;
   
-  if(img_type == "url") {
+  if(imgType == "url") {
     app.inputs.create({
-      url: img_value
-    }).then(
-      function(response) {
-        alert("Image successfully added!");
-      },
-      function(err) {
-        alert(err);
-      }
-    );
-  }
-  
-  else if(img_type == "base64") {
-    app.inputs.create({
-      base64: img_value
+      url: imgValue
     }).then(
       function(response) {
         alert("Image successfully added!");
@@ -265,4 +263,72 @@ function addImageToApp() {
       }
     );
   }
+  
+  else if(imgType == "base64") {
+    app.inputs.create({
+      base64: imgValue
+    }).then(
+      function(response) {
+        alert("Image successfully added!");
+      },
+      function(err) {
+        alert("Error Adding Image. Check to see if it is a duplicate.");
+      }
+    );
+  }
+}
+
+/*
+  Purpose: Create a dynamic div to store entire user session
+  Args:
+    index - # of the image in the session
+*/
+function createNewDisplayDiv(index) {
+  var mainDiv = document.getElementById("predictions");
+  
+  var elem = document.createElement('div');
+  elem.innerHTML = 
+    '<div style="margin-top:30px; margin-left:20px; margin-bottom:30px; clear:left; float:left"> \
+      <img id="img_preview' + index + '" src="" width="400"/> \
+      <br/> \
+      <span id="add-image-button" style="visibility:hidden"> \
+        <button onClick="addImageToApp(' + index + ')">Add image to application</button> \
+      </span> \
+    </div> \
+    <div id="concepts" class="conceptBox"> \
+    </div>';
+    
+  mainDiv.innerHTML = elem.innerHTML + mainDiv.innerHTML;
+}
+
+/*
+  Purpose: Creates hidden Div elements to store info of each picture uploaded
+  Args:
+    urlOrBase64 - binary variable to store the type of image
+    source - the actual URL string or the base64
+*/
+function createHiddenDivs(urlOrBase64, source) {
+  // first grab current index
+  var index = document.getElementById("hidden-counter").value;
+  
+  // type
+  var input1 = document.createElement("input");
+  input1.setAttribute("type", "hidden");
+  input1.setAttribute("id", "hidden-type"+index);
+  input1.setAttribute("name", "hidden-type"+index);
+  input1.setAttribute("value", urlOrBase64);
+  
+  // value
+  var input2 = document.createElement("input");
+  input2.setAttribute("type", "hidden");
+  input2.setAttribute("id", "hidden-val"+index);
+  input2.setAttribute("name", "hidden-val"+index);
+  input2.setAttribute("value", source);
+  
+  // add new inputs to page
+  document.getElementsByTagName('body')[0].appendChild(input1);
+  document.getElementsByTagName('body')[0].appendChild(input2);
+  
+  // increment index
+  document.getElementById("hidden-counter").value = parseInt(index)+1;
 }

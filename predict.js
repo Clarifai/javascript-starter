@@ -9,10 +9,11 @@ function predict_click(value, source) {
   var index = document.getElementById("hidden-counter").value;
 
   // Div Stuff
-  if(index > 1)
+  if(index > 1) {
     createNewDisplayDiv(index);
-      
-  if(source == "url") {
+  }
+  
+  if(source === "url") {
     document.getElementById("img_preview" + index).src = value;
     doPredict({ url: value });
     
@@ -20,7 +21,7 @@ function predict_click(value, source) {
     createHiddenDivs("url", value);
   }
     
-  else if(source == "file") {
+  else if(source === "file") {
     var preview = document.querySelector("#img_preview" + index);
     var file    = document.querySelector("input[type=file]").files[0];
     var reader  = new FileReader();
@@ -78,16 +79,18 @@ function doPredict(value) {
       	    conceptNames += '<br/><b><span style="font-size:10px">Age Appearance</span></b>';
       		
       	    // print top 5 ages
-      	    for(var a = 0; a < 5; a++)
+      	    for(var a = 0; a < 5; a++) {
       	      conceptNames += '<li>' + ageArray[a].name + ': <i>' + ageArray[a].value + '</i></li>'; 
+            }
       		
       	    // Ethnicity Header
       	    conceptNames += '<b><span style="font-size:10px">Multicultural Appearance</span></b>';
       			
       	    // print top 3 ethnicities
-      	    for(var e = 0; e < 3; e++)
+      	    for(var e = 0; e < 3; e++) {
       	      conceptNames += '<li>' + ethnicArray[e].name + ': <i>' + ethnicArray[e].value + '</i></li>'; 
-      		      		
+            }
+            
       	    // Gender Header
       	    conceptNames += '<b><span style="font-size:10px">Gender Appearance</span></b>';
       		
@@ -109,8 +112,9 @@ function doPredict(value) {
       	  tagArray = regionArray[i].data.face.identity.concepts;
       			
       	  // Print first 10 results
-      	  for(var c=0; c < 10; c++)
+      	  for(var c=0; c < 10; c++) {
       	    conceptNames += '<li>' + tagArray[c].name + ': <i>' + tagArray[c].value + '</i></li>'; 
+          }
       	}
       		
       	// Logos
@@ -145,13 +149,14 @@ function doPredict(value) {
      }
       
       // Color Model
-      else if(modelName == "color") {
+      else if(modelName === "color") {
       	conceptNames += '<b><span style="font-size:10px">Colors</span></b>';
         tagArray = response.rawData.outputs[0].data.colors;
         
-        for (var col = 0; col < tagArray.length; col++)
+        for (var col = 0; col < tagArray.length; col++) {
           conceptNames += '<li>' + tagArray[col].w3c.name + ': <i>' + tagArray[col].value + '</i></li>';
-
+        }
+        
         tagCount=tagArray.length;
       }
       
@@ -159,20 +164,24 @@ function doPredict(value) {
       else if(response.rawData.outputs[0].data.hasOwnProperty("concepts")) {
         tagArray = response.rawData.outputs[0].data.concepts;
         
-        for (var other = 0; other < tagArray.length; other++) 
+        for (var other = 0; other < tagArray.length; other++) {
           conceptNames += '<li>' + tagArray[other].name + ': <i>' + tagArray[other].value + '</i></li>';
-          
+        }
+        
         tagCount=tagArray.length;
       }
       
       // Bad region request
       else {
-      	if(modelName != "logo" && modelName != "focus")
+      	if(modelName != "logo" && modelName != "focus") {
           $('#concepts').html("<br/><br/><b>No Faces Detected!</b>");
-      	else if(modelName == "logo")
+        }
+      	else if(modelName == "logo") {
           $('#concepts').html("<br/><br/><b>No Logos Detected!</b>");
-        else
+        }
+        else {
           $('#concepts').html("<br/><br/><b>No Focus Regions Detected!</b>");
+        }
       	return;
       }
       
@@ -199,43 +208,55 @@ function doPredict(value) {
 function getSelectedModel() {
   var model = document.querySelector('input[name = "model"]:checked').value;
   
-  if(model == "general")
+  if(model === "general") {
     return Clarifai.GENERAL_MODEL;
+  }
     
-  else if(model == "food")
+  else if(model === "food") {
     return Clarifai.FOOD_MODEL;
+  }
     
-  else if(model == "NSFW")
+  else if(model === "NSFW") {
     return Clarifai.NSFW_MODEL;
+  }
     
-  else if(model == "travel")
+  else if(model === "travel") {
     return Clarifai.TRAVEL_MODEL;
+  }
     
-  else if(model == "wedding")
+  else if(model === "wedding") {
     return Clarifai.WEDDINGS_MODEL;
+  }
     
-  else if(model == "color")
+  else if(model === "color") {
     return Clarifai.COLOR_MODEL;
-    
-  else if(model == "demographic")
+  }
+  
+  else if(model === "demographic") {
     return Clarifai.DEMOGRAPHICS_MODEL;
-    
-  else if(model == "logo")
+  }
+  
+  else if(model === "logo") {
   	return Clarifai.LOGO_MODEL;
-    
-  else if(model == "apparel")
+  }
+  
+  else if(model === "apparel") {
     return "e0be3b9d6a454f0493ac3a30784001ff";
-    
-  else if(model == "faces")
+  }
+  
+  else if(model === "faces") {
     return Clarifai.FACE_DETECT_MODEL;
-
-  else if(model == "focus")
+  }
+  
+  else if(model == "focus") {
     return Clarifai.FOCUS_MODEL;
-    
-  else if(model == "celebrity")
+  }
+  
+  else if(model === "celebrity") {
     return "e466caa0619f444ab97497640cefc4dc";
-    
-  else if(model == "custom") {
+  }
+  
+  else if(model === "custom") {
     var e = document.getElementById("custom_models_dropdown");
     return e.options[e.selectedIndex].value;
   }
@@ -251,7 +272,7 @@ function addImageToApp(index) {
   var imgType = document.getElementById("hidden-type" + index).value;
   var imgValue = document.getElementById("hidden-val" + index).value;
   
-  if(imgType == "url") {
+  if(imgType === "url") {
     app.inputs.create({
       url: imgValue
     }).then(
@@ -264,7 +285,7 @@ function addImageToApp(index) {
     );
   }
   
-  else if(imgType == "base64") {
+  else if(imgType === "base64") {
     app.inputs.create({
       base64: imgValue
     }).then(

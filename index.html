@@ -16,7 +16,7 @@
   // Checks for valid image type
   function validFile(imageName) {
     var lowerImageName = imageName.toLowerCase();
-    return lowerImageName.indexOf(".jpg") != -1 || lower_image_name.indexOf(".jpeg") != -1 || lower_image_name.indexOf(".png") != -1 || lower_image_name.indexOf(".tiff") != -1 || lower_image_name.indexOf(".bmp") != -1 
+    return lowerImageName.search(/jpg|png|bmp|tiff/gi) != -1;
   }
   
   // Fills custom model dropdown

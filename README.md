@@ -22,8 +22,7 @@ This is for security purposes, so you don't share your Client ID and Client
 Secret with others.  Add the following to that file:
 
 ```
-var CLIENT_ID = 'your ID here';
-var CLIENT_SECRET = 'your secret here';
+var myApiKey = 'YOUR API KEY HERE';
 ```
 
 You'll also notice a custom_train.js file which serves as a reference for Custom Training. Any custom models that you create (under these credentials) will appear in the dropdown menu on index.html, next to the "Custom" label

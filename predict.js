@@ -256,6 +256,10 @@ function getSelectedModel() {
     return "e466caa0619f444ab97497640cefc4dc";
   }
   
+  else if(model === "moderation") {
+    return "d16f390eb32cad478c7ae150069bd2c6";
+  }
+  
   else if(model === "custom") {
     var e = document.getElementById("custom_models_dropdown");
     return e.options[e.selectedIndex].value;

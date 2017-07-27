@@ -8,10 +8,9 @@
   <script type="text/javascript" src="keys.js"></script>
   <script type="text/javascript" src="https://sdk.clarifai.com/js/clarifai-latest.js"></script>
   <script>
-  var app = new Clarifai.App(
-    CLIENT_ID,
-    CLIENT_SECRET
-  );
+  var app = new Clarifai.App({
+    apiKey: myApiKey
+  });
   
   // Checks for valid image type
   function validFile(imageName) {
@@ -99,6 +98,7 @@
     <input type="radio" name="model" value="celebrity"> Celebrity<br>
     <input type="radio" name="model" value="logo"> Logo<br>
     <input type="radio" name="model" value="focus"> Focus<br>
+    <input type="radio" name="model" value="moderation"> Moderation<br>
     <input type="radio" name="model" value="custom"> Custom &nbsp;<select id="custom_models_dropdown"></select><br>
   </form>
   <div style="float:left">

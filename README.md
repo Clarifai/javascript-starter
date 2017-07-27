@@ -27,4 +27,4 @@ You'll also notice a custom_train.js file which serves as a reference for Custom
 
 <img src="https://s3.amazonaws.com/jared-clarifai-stuff/Screen+Shot+2017-01-05+at+4.04.37+PM.png"/>
 
-Note the "Add image to Application" button on the bottom left of the image. This will automatically add the image to the application that is associated with your credentials!
+Note the "Add image to Application" button on the bottom left of the image. This will automatically add the image to the application that is associated with your key!

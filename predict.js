@@ -60,6 +60,8 @@ function doPredict(value) {
       var tagArray, regionArray;
       var tagCount = 0;
       var modelName = response.rawData.outputs[0].model.name;
+      var modelNameShort = modelName.split("-")[0];
+      var modelHeader = '<b><span style="font-size:14px">' + capitalize(modelNameShort) + ' Model</span></b>';
       
       // Check for regions models first
       if(response.rawData.outputs[0].data.hasOwnProperty("regions")) {
@@ -132,18 +134,17 @@ function doPredict(value) {
       	// Focus
       	else if(modelName == "focus") {
       	  // Print total focus score and all regions with focus
-      			
-      	  if(i === 0) {
-      	    conceptNames += '<li>Overall Focus: <i>' + response.rawData.outputs[0].data.focus.value + '</i></li>'; 
-      	  }
-      			
       	  conceptNames += '<br/><b><span style="font-size:10px">Focus Region</span></b>';
       	  conceptNames += '<li>Top Row: <i>' + regionArray[i].region_info.bounding_box.top_row + '</i></li>';
       	  conceptNames += '<li>Left Column: <i>' + regionArray[i].region_info.bounding_box.left_col + '</i></li>';
       	  conceptNames += '<li>Bottom Row: <i>' + regionArray[i].region_info.bounding_box.bottom_row + '</i></li>';
       	  conceptNames += '<li>Right Column: <i>' + regionArray[i].region_info.bounding_box.right_col + '</i></li>';
+          
+          if(i === regionArray.length - 1) {
+      		  conceptNames += '<br><br><li><br><br>Overall Focus: <i>' + response.rawData.outputs[0].data.focus.value + '</i><br><br><br></li>'; 
+      		}
       	}
-      		
+
       	tagCount+=10;      	
       }
      }
@@ -187,9 +188,16 @@ function doPredict(value) {
       
       var columnCount = tagCount / 10;
       
+      // Focus gets one more column
+      if(modelName == "focus") {
+      	columnCount += 1;
+      }
+      
       conceptNames = '<ul style="margin-right:20px; margin-top:20px; columns:' + columnCount + '; -webkit-columns:' + columnCount + '; -moz-columns:' + columnCount + ';">' + conceptNames;
         
       conceptNames += '</ul>';
+      conceptNames = modelHeader + conceptNames;
+      
       $('#concepts').html(conceptNames);
       
       document.getElementById("add-image-button").style.visibility = "visible";
@@ -356,4 +364,14 @@ function createHiddenDivs(urlOrBase64, source) {
   
   // increment index
   document.getElementById("hidden-counter").value = parseInt(index)+1;
+}
+
+/*
+  Purpose: Return a capitalized String
+  Args:
+    s - A String
+*/
+function capitalize(s)
+{
+  return s[0].toUpperCase() + s.slice(1);
 }

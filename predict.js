@@ -245,7 +245,7 @@ function getSelectedModel() {
   }
   
   else if(model === "logo") {
-  	return Clarifai.LOGO_MODEL;
+    return Clarifai.LOGO_MODEL;
   }
   
   else if(model === "apparel") {
@@ -268,11 +268,22 @@ function getSelectedModel() {
     return "d16f390eb32cad478c7ae150069bd2c6";
   }
   
+  else if(model === "portrait") {
+    return "de9bd05cfdbf4534af151beb2a5d0953";
+  }
+  
+  else if(model === "landscape") {
+    return "bec14810deb94c40a05f1f0eb3c91403";
+  }
+  
+  else if(model == "texturespatterns") {
+    return "fbefb47f9fdb410e8ce14f24f54b47ff";
+  }
+  
   else if(model === "custom") {
     var e = document.getElementById("custom_models_dropdown");
     return e.options[e.selectedIndex].value;
   }
-
 }
 
 /*

@@ -28,18 +28,16 @@
   window.onload = function() {
     var select = document.getElementById("custom_models_dropdown");
     
-    var publicMods = ['general-v1.3', 'nsfw-v1.0', 'face-v1.3', 'color', 'food-items-v1.0', 'travel-v1.0', 'celeb-v1.3', 'weddings-v1.0', 'apparel', 'demographics', 'logo', 'focus', 'moderation'];
-    
     app.models.list().then(
       function(response) {
         var ids = response.rawData;
         
         for(var i=0; i < ids.length; i++) {
-          var opt = ids[i];
-          if(publicMods.indexOf(opt.name) == -1) {
+          var model = ids[i];
+          if(model.app_id != "main") {
             var el = document.createElement("option");
-            el.textContent = opt.name;
-            el.value = opt.id;
+            el.textContent = model.name;
+            el.value = model.id;
             select.appendChild(el);
           }
         }
@@ -105,6 +103,9 @@
     <input type="radio" name="model" value="logo"> Logo<br>
     <input type="radio" name="model" value="focus"> Focus<br>
     <input type="radio" name="model" value="moderation"> Moderation<br>
+    <input type="radio" name="model" value="portrait"> Portrait Quality<br>
+    <input type="radio" name="model" value="landscape"> Landscape Quality<br>
+    <input type="radio" name="model" value="texturespatterns"> Textures & Patterns<br>
     <input type="radio" name="model" value="custom"> Custom &nbsp;<select id="custom_models_dropdown"></select><br>
   </form>
   <div style="float:left">
